@@ -3,69 +3,84 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Apiapp.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class HabitsController : Controller
     {
-        private readonly List<Habits> _habits;
-        public HabitsController(List<Habits> habits)
-        {
-            _habits = habits ?? new List<Habits>
-            {
-                new Habits(1, "Cпорт" , "Становая тяга 10 повторения, вес 50 кг" , DateTime.Now , 0),
-                new Habits(2, "Программирование" , "Сделать 10 хардовых задач на LeetCode" , DateTime.Now , 25),
-                new Habits(3, "Cаморефлекксия" , "В течения месяца делать саморелекисю" , DateTime.Now , 30),
-                new Habits(4, "Проект" , "Каждый день 30 минут делать Unity" , DateTime.Now , 40),
-                new Habits(5, "Работа" , "Сделать 20 закаков" , DateTime.Now , 50)
-            };
-        }
-        
+        private readonly Listcs _habits;
 
-        public ActionResult<Habits> GetHaBits(int id)
+        public HabitsController(Listcs habits)
         {
-            var habit = _habits.FirstOrDefault(h => h.Id == id);
+            _habits = habits;
+        }
+
+
+        [HttpPost]
+        public JsonResult PostHabit(Habits habits)
+        {
+            if (habits.Id == 0)
+            {
+                _habits.Habits.Add(habits);
+
+            }
+            else
+            {
+                var bookingInDB = _habits.Habits.FirstOrDefault(x => x.Id == habits.Id);
+
+                if (bookingInDB == null)
+                {
+                    return new JsonResult(NotFound());
+                }
+
+                bookingInDB = habits;
+            }
+            return new JsonResult(Ok(habits));
+        }
+
+        [HttpGet]
+        public JsonResult GetHabit(int id)
+        {
+            var habits = _habits.Habits.FirstOrDefault(x => x.Id == id);
+
+            if (habits == null)
+                return new JsonResult(NotFound());
+
+
+            return new JsonResult(Ok(habits));
+        }
+
+        [HttpPut]
+        public JsonResult PutHabits(Habits habits)
+        {
+            var bookInDb = _habits.Habits.FirstOrDefault(x => x.Id == habits.Id);
+
+            if (bookInDb == null)
+            {
+                _habits.Habits.Add(habits);
+                return new JsonResult(Ok(habits));
+            }
+            else
+            {
+                return new JsonResult(NoContent());
+            }
+
+        }
+
+        [HttpDelete]
+        public JsonResult deleteBook(int id)
+        {
+            var habit = _habits.Habits.FirstOrDefault(x => x.Id == id);
+
             if (habit == null)
             {
-                return NotFound();
+                return new JsonResult(NotFound());
             }
-            return habit;
-        }
-
-        private readonly ILogger<HabitsController> _logger;
-
-        public HabitsController(ILogger<HabitsController> logger)
-        {
-            _logger = logger;
-        }
-
-        [HttpGet(Name = "GetHabits")]
-        public IEnumerable<Habits> Get()
-        {
-            return _habits;
-        }
-
-
-
-
-        // GET: HabitsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: HabitsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            else
             {
-                return RedirectToAction(nameof(Index));
+                _habits.Habits.Remove(habit);
+                return new JsonResult(Ok(habit));
             }
-            catch
-            {
-                return View();
-            }
+
         }
     }
 }
