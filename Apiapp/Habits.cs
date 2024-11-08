@@ -1,4 +1,6 @@
-﻿namespace Apiapp
+﻿using System.Text.Json.Serialization;
+
+namespace Apiapp
 {
     public class Habits
     {
@@ -7,6 +9,7 @@
         public string Description { get; set; }
         public int ProcentDone { get; set; }
 
+        
         public Habits(int id, string name , string description , int Procent) 
         { 
             this.Id = id;
@@ -14,5 +17,7 @@
             this.Description = description;
             this.ProcentDone = Procent;
         }
+
+        public Habits() { }
     }
 }

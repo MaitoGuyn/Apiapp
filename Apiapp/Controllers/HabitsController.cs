@@ -18,6 +18,11 @@ namespace Apiapp.Controllers
         [HttpPost]
         public JsonResult PostHabit(Habits habits)
         {
+            //if (habits == null)
+            //{
+            //    return new JsonResult("Invalid habit data") { StatusCode = 400 };
+            //}
+
             if (habits.Id == 0)
             {
                 _habits.Habits.Add(habits);
@@ -34,7 +39,8 @@ namespace Apiapp.Controllers
 
                 bookingInDB = habits;
             }
-            return new JsonResult(Ok(habits));
+            
+            return new JsonResult(habits);
         }
 
         [HttpGet]
@@ -50,18 +56,24 @@ namespace Apiapp.Controllers
         }
 
         [HttpPut]
-        public JsonResult PutHabits(Habits habits)
+        public JsonResult PutHabits(int id, Habits habits)
         {
-            var bookInDb = _habits.Habits.FirstOrDefault(x => x.Id == habits.Id);
+            if (habits == null)
+            {
+                return new JsonResult("Invalid habit data");
+            }
+
+            var bookInDb = _habits.Habits.FirstOrDefault(x => x.Id == id);
 
             if (bookInDb == null)
             {
-                _habits.Habits.Add(habits);
-                return new JsonResult(Ok(habits));
+                return new JsonResult(NoContent());
             }
             else
             {
-                return new JsonResult(NoContent());
+                _habits.AddHabit(habits);
+                return new JsonResult(Ok(habits));
+                
             }
 
         }

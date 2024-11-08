@@ -10,5 +10,10 @@
             new Habits(4, "Проект", "Каждый день 30 минут заниматься Unity", 40),
             new Habits(5, "Работа", "Сделать 20 заказов", 50)
         };
+
+        public void AddHabit(Habits habit)
+        {
+            Habits.Add(habit);
+        }
     }
 }
